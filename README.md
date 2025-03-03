@@ -3,7 +3,7 @@ This project will look at the distribution of bees within the various vegetation
 
 The **vegetation** spatial data was acquired from **SANBI** , on the BGIS site 
 
- <u>The purpose of the data</u> : To provide the potential or historical extent of ecologically based vegetation units of **South Africa**
+ The purpose of the data : To provide the potential or historical extent of ecologically based vegetation units of **South Africa**
 (including Prince Edward and Marion Islands), Lesotho and Swaziland at a landscape scale.
 
 _References_ : South African National Biodiversity Institute . 2024 Final Vegetation Map of South Africa, Lesotho and Swaziland (Shapefile) [Vector] 2024. Available from the Biodiversity GIS website
