@@ -10,4 +10,4 @@ _References_ : South African National Biodiversity Institute . 2024 Final Vegeta
 
 Alternatively: South African National Biodiversity Institute (2006- 2024). The National Vegetation Map 2024 Citation Online, https://bgis.sanbi.org/vegmap, Version 2024
 
-The **Bee** spatial data was acquired from **iNaturalist** 
+The **Bee** spatial data was acquired directly from **iNaturalist** onto R studio , filtering 1000 observations of bees 
