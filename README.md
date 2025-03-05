@@ -1,6 +1,7 @@
-# GIS_Project
+# GIS Project
 This project will look at the distribution of bees within the various vegetation groups of the fynbos biome , within the Western Cape Provice , South africa
 
+# Vegetation data
 The **vegetation** spatial data was acquired from **SANBI** , on the BGIS site 
 
  The purpose of the data : To provide the potential or historical extent of ecologically based vegetation units of **South Africa**
@@ -10,4 +11,5 @@ _References_ : South African National Biodiversity Institute . 2024 Final Vegeta
 
 Alternatively: South African National Biodiversity Institute (2006- 2024). The National Vegetation Map 2024 Citation Online, https://bgis.sanbi.org/vegmap, Version 2024
 
-The **Bee** spatial data was acquired directly from **iNaturalist** onto R studio , filtering 1000 observations of bees 
+# Bee data
+The **Bee** spatial data was acquired directly from **iNaturalist** onto R studio , filtering for 2000 observations of bees in the Western Cape
