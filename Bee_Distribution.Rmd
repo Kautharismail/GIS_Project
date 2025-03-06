@@ -44,23 +44,9 @@ library(wesanderson)
 ```{r}
 veg<-st_read("Shapefile/NVM2024Beta_IEM5_11_01072024.shp")
 ```
-### Check the coordinate reference systems
 
-```{r}
-st_crs(veg)
-```
 ##### The vegetation data  uses WGS84 coordinate system with code =4326
 
-### Looking at the data more closely 
-```{r}
-class(veg)
-head(veg)
-```
-
-### Checking if the file exists 
-```{r}
-file.exists("Shapefile/NVM2024Beta_IEM5_11_01072024.shp")
-```
 ### Subsetting the data to the Western Cape using coordinates
 ```{r}
 
@@ -92,7 +78,6 @@ st_write(coords_sf, "lo19_coordinates.shp",append=FALSE)
 ```{r}
 coords_sf<- st_transform(coords_sf, st_crs(veg))
 veg <- st_crop(veg, coords_sf) 
-st_crs(veg)
 ```
 
 ### Basic plotting looking at the different bioregions in the western cape 
@@ -227,7 +212,7 @@ ggplot() +
   ggtitle("Distribution of the Bee population within the varying vegetation groups of the Western Cape") +
   theme_minimal() + 
   theme(
-    plot.title = element_text(hjust = 0.5, size = 9, face = "bold", margin = margin(t = 40, b = 60)),  
+    plot.title = element_text(hjust = 0.5, size = 10, face = "bold", margin = margin(t = 40, b = 60)),  
     plot.title.position = "plot",  # Ensures title positioning
     plot.margin = margin(t = 10, r = 10, b = 10, l = 10)  # Increase bottom margin
   ) +labs(
