@@ -1,0 +1,237 @@
+---
+title: "GIS"
+author: "Kauthar Ismail"
+date: "2025-02-26"
+output: html_document
+---
+We will be looking at the distribution of bees in the western cape  , 
+with their vegetation types
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+### Load the necessary libraries 
+
+```{r}
+library(sf)
+library(lwgeom)
+library(tidyverse)
+library(terra)
+library(stars)
+library(exactextractr)
+library(htmltools)
+library(cowplot)
+library(hrbrthemes)
+library(leaflet)
+library(rosm)
+library(ggspatial)
+library(rnaturalearth)
+library(mapview)
+library(leafpop)
+library(tmap)
+library(rinat)
+library(prettymapr)
+library(wesanderson)
+
+```
+
+### Reading in the data
+#### reading in 2024 Final Vegetation Map of South Africa,Lesotho and Swaziland (Shapefile)[Vector]
+
+```{r}
+veg<-st_read("Shapefile/NVM2024Beta_IEM5_11_01072024.shp")
+```
+### Check the coordinate reference systems
+
+```{r}
+st_crs(veg)
+```
+##### The vegetation data  uses WGS84 coordinate system with code =4326
+
+### Looking at the data more closely 
+```{r}
+class(veg)
+head(veg)
+```
+
+### Checking if the file exists 
+```{r}
+file.exists("Shapefile/NVM2024Beta_IEM5_11_01072024.shp")
+```
+### Subsetting the data to the Western Cape using coordinates
+```{r}
+
+# Define coordinates in WGS84 (longitude, latitude)
+coords <- data.frame(
+  id = 1:3,  # Example points
+  lon = c(18, 18.5, 19.5),  # Longitudes
+  lat = c(-33, -34, -34.5)  # Latitudes
+)
+
+# Convert to an sf object
+coords_sf <- st_as_sf(coords, coords = c("lon", "lat"), crs = 4326)
+
+# Print results
+print(coords_sf)
+
+# Extract transformed X, Y coordinates
+transformed_coords <- st_coordinates(coords_sf)
+
+# Combine with original data
+coords_WGS84_df <- cbind(coords, transformed_coords)
+
+print(coords_WGS84_df)
+st_write(coords_sf, "lo19_coordinates.shp",append=FALSE)
+
+```
+
+### Transforming the data so that the CRS systems are the same and then cropping
+```{r}
+coords_sf<- st_transform(coords_sf, st_crs(veg))
+veg <- st_crop(veg, coords_sf) 
+st_crs(veg)
+```
+
+### Basic plotting looking at the different bioregions in the western cape 
+
+```{r}
+plot(veg[6],  main="Bioregions")
+
+``` 
+
+
+### Loading the iNaturalist data on Bee populations within the Western Cape
+
+```{r}
+
+#Call the data directly from iNat
+pc <- get_inat_obs(taxon_name = "Bee",
+                   bounds = c(-35, 18, -33.5, 19.5),
+                   maxresults = 2000)
+
+#View the first few rows of data
+head(pc)
+```
+``` 
+```
+
+### Filter returned according to certain attributes with positional accuaracy less than 46,latitude less than 0, wild specimen and research quality 
+
+```{r}
+pc <- pc %>% filter(positional_accuracy<46 & 
+                latitude<0 &
+                !is.na(latitude) &
+                captive_cultivated == "false" &
+                quality_grade == "research")
+```
+
+### Checking the class of the data frame
+```{r}
+class(pc)
+```
+
+### Converting the data frame into a spatial object of class=sf
+
+```{r}
+#Make the dataframe a spatial object of class = "sf"
+pc <- st_as_sf(pc, coords = c("longitude", "latitude"), crs = 4326)
+#check the class
+class(pc)
+
+```
+### Check the data frame now to ensure it is a sf and has "geometry"
+```{r}
+names(pc)
+```
+
+### Plotting graph of the bee distribution and adding basemats to the plots
+```{r}
+
+ggplot() + 
+  annotation_map_tile(type = "osm", progress = "none") + 
+  geom_sf(data=pc)+ggtitle("Bee distribution within the Western Cape") +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 14, face = "bold"))
+
+rosm::osm.types()
+
+```
+### Creating interactive maps with leaflet and mapview
+```{r}
+library(leaflet)
+library(htmltools)
+leaflet() %>%
+  # Add default OpenStreetMap map tiles
+  addTiles(group = "Default") %>%  
+  # Add our points
+  addCircleMarkers(data = pc,
+                   group = "bees",
+                   radius = 3, 
+                   color = "yellow") 
+```
+
+### Creating a map showing the details of the common name and whether the specimen is from a garden and making a live link
+```{r}
+library(mapview)
+library(leafpop)
+
+lpc <- pc %>%
+  mutate(click_url = paste("<b><a href='", url, "'>Link to iNat observation</a></b>"))
+mapview(pc, 
+        popup = 
+          popupTable(lpc,
+            zcol = c("user_login", "captive_cultivated","common_name", "click_url")))
+```
+
+### Get the remnants layer to reduce the number of cultivated records with the remaining extent of the vegetation types 
+
+```{r}
+vegr <- st_read("Shapefile/NVM2024Beta_IEM5_11_01072024.shp")
+```
+
+### Transform the data and intersecting it 
+```{r}
+pc1 <- st_transform(pc, st_crs(vegr)) 
+dim(pc1) # 769 rows and 36 columns
+intersect<- st_intersection(pc1, vegr)
+dim(intersect) # 765 rows and 36 columns
+```
+
+### Plotting the graph of the intersections
+```{r}
+ggplot() + 
+  annotation_map_tile(type = "osm", progress = "none") + 
+  geom_sf(data=intersect)+labs(title=)+
+  ggtitle("Map of the intersections within the remaining extent of natural vegetation") +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 13, face = "bold"))
+```
+
+
+### Plot of the Bee distribution in the vegetation groups of the Western Cape
+```{r}
+library(wesanderson)
+library(ggplot2)
+library(wesanderson)
+
+pal <- wes_palette("Darjeeling1", 28, type = "continuous")
+ggplot() + 
+  annotation_map_tile(type = "osm", progress = "none") + 
+  geom_sf(data = intersect, aes(col = T_Name)) +
+  scale_colour_manual(values = pal) +
+  ggtitle("Distribution of the Bee population within the varying vegetation groups of the Western Cape") +
+  theme_minimal() + 
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 9, face = "bold", margin = margin(t = 40, b = 60)),  
+    plot.title.position = "plot",  # Ensures title positioning
+    plot.margin = margin(t = 10, r = 10, b = 10, l = 10)  # Increase bottom margin
+  ) +labs(
+    fill = "Vegetation Type",   # Legend for 'fill'
+    color = "Vegetation type")
+
+```
