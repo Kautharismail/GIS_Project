@@ -13,3 +13,6 @@ Alternatively: South African National Biodiversity Institute (2006- 2024). The N
 
 # Bee data
 The **Bee** spatial data was acquired directly from **iNaturalist** onto R studio , filtering for 2000 observations of bees in the Western Cape
+
+# HTML file
+Link to the HTML file : https://htmlview.glitch.me/?https://github.com/Kautharismail/GIS_Project/blob/main/Bee_Distribution.html
