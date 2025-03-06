@@ -44,6 +44,10 @@ library(wesanderson)
 ```{r}
 veg<-st_read("Shapefile/NVM2024Beta_IEM5_11_01072024.shp")
 ```
+### Check the coordinate reference system
+```{r}
+st_crs(veg)
+```
 
 ##### The vegetation data  uses WGS84 coordinate system with code =4326
 
